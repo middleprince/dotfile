@@ -1,0 +1,165 @@
+set nocompatible              " 去除VI一致性,必须
+filetype off                  " 必须
+
+" 设置包括vundle和初始化相关的runtime path
+"set rtp+=~/.vim/bundle/Vundle.vim
+"call vundle#begin()
+" 另一种选择, 指定一个vundle安装插件的路径,将配置文件写在
+" ~/.vimrc.bundles里，便于管理
+if filereadable(expand("~/.vimrc.bundles"))
+  source ~/.vimrc.bundles
+endif
+
+
+filetype plugin indent on    " 必须 加载vim自带和插件相应的语法和文件类型相关脚本
+"call vundle#begin('~/.vimrc.bundles')
+
+" 让vundle管理插件版本,必须
+"Plugin 'VundleVim/Vundle.vim'
+"Plugin'altercation/vim-colors-solarized'
+"cpp highlight enhanced
+"Plugin 'octol/vim-cpp-enhanced-highlight'
+"Plugin 'Valloric/YouCompleteMe'
+" 以下范例用来支持不同格式的插件安装.
+" 请将安装插件的命令放在vundle#begin和vundle#end之间.
+" Github上的插件
+" 格式为 Plugin '用户名/插件仓库名'
+"Plugin 'tpope/vim-fugitive'
+" 来自 http://vim-scripts.org/vim/scripts.html 的插件
+" Plugin '插件名称' 实际上是 Plugin 'vim-scripts/插件仓库名' 只是此处的用户名可以省略
+"Plugin 'L9'
+" 由Git支持但不再github上的插件仓库 Plugin 'git clone 后面的地址'
+"Plugin 'git://git.wincent.com/command-t.git'
+" 本地的Git仓库(例如自己的插件) Plugin 'file:///+本地插件仓库绝对路径'
+"Plugin 'file:///home/gmarik/path/to/plugin'
+" 插件在仓库的子目录中.
+" 正确指定路径用以设置runtimepath. 以下范例插件在sparkup/vim目录下
+"Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+" 安装L9，如果已经安装过这个插件，可利用以下格式避免命名冲突
+"Plugin 'ascenator/L9', {'name': 'newL9'}
+
+" 你的所有插件需要在下面这行之前
+"call vundle#end()            " 必须
+"filetype plugin indent on    " 必须 加载vim自带和插件相应的语法和文件类型相关脚本
+" 忽视插件改变缩进,可以使用以下替代:
+"filetype plugin on
+"
+" 简要帮助文档
+" :PluginList       - 列出所有已配置的插件
+" :PluginInstall    - 安装插件,追加 `!` 用以更新或使用 :PluginUpdate
+" :PluginSearch foo - 搜索 foo ; 追加 `!` 清除本地缓存
+" :PluginClean      - 清除未使用插件,需要确认; 追加 `!` 自动批准移除未使用插件
+"
+" 查阅 :h vundle 获取更多细节和wiki以及FAQ
+" 将你自己对非插件片段放在这行之后
+
+augroup vimrcEx
+  autocmd!
+
+  " When editing a file, always jump to the last known cursor position.
+  " Don't do it for commit messages, when the position is invalid, or when
+  " inside an event handler (happens when dropping a file on gvim).
+  autocmd BufReadPost *
+    \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
+    \   exe "normal g`\"" |
+    \ endif
+
+  " Cucumber navigation commands
+  autocmd User Rails Rnavcommand step features/step_definitions -glob=**/* -suffix=_steps.rb
+  autocmd User Rails Rnavcommand config config -glob=**/* -suffix=.rb -default=routes
+
+  " Set syntax highlighting for specific file types
+  autocmd BufRead,BufNewFile Appraisals set filetype=ruby
+  autocmd BufRead,BufNewFile *.md set filetype=markdown
+
+  " Enable spellchecking for Markdown
+  autocmd FileType markdown setlocal spell
+
+  " Automatically wrap at 80 characters for Markdown
+  autocmd BufRead,BufNewFile *.md setlocal textwidth=80
+augroup END
+
+
+
+" Nerd Tree
+let NERDChristmasTree=0
+let NERDTreeWinSize=40
+let NERDTreeChDirMode=2
+let NERDTreeIgnore=['\~$', '\.pyc$', '\.swp$']
+let NERDTreeShowBookmarks=1
+let NERDTreeWinPos="left"
+autocmd vimenter * if !argc() | NERDTree | endif " Automatically open a NERDTree if no files where specified
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif " Close vim if the only window left open is a NERDTree
+nmap <F5> :NERDTreeToggle<cr>
+
+
+
+"YCM config
+" 设置跳转到方法/函数定义的快捷键 
+nnoremap <leader>j :YcmCompleter GoToDefinitionElseDeclaration<CR> 
+" 触发补全快捷键 
+let g:ycm_key_list_select_completion = ['<TAB>', '<c-n>', '<Down>'] 
+let g:ycm_key_list_previous_completion = ['<S-TAB>', '<c-p>', '<Up>'] 
+let g:ycm_auto_trigger = 1 
+" 最小自动触发补全的字符大小设置为 3 
+let g:ycm_min_num_of_chars_for_completion = 3 
+" YCM的previw窗口比较恼人，还是关闭比较好 
+set completeopt-=preview 
+
+
+
+
+" ctrlp
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux"
+let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+
+set laststatus=2 " Always display the status line
+set statusline+=%{fugitive#statusline()} "  Git Hotness
+
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+
+
+" Tagbar
+let g:tagbar_width=35
+let g:tagbar_autofocus=1
+nmap <F6> :TagbarToggle<CR>
+
+
+"配色方案
+ syntax enable
+ set background=dark
+ colorscheme solarized
+
+" 总是显示状态栏
+  set laststatus=2
+"  显示光标当前位置
+  set ruler
+"  开启行号显示
+  set number
+"  高亮显示当前行/列
+ set cursorline
+ set cursorcolumn
+"  高亮显示搜索结果
+ set hlsearch
+
+ set backspace=2
+ " 自适应不同语言的智能缩进
+  filetype indent on
+ " 将制表符扩展为空格
+  set expandtab
+ " 设置编辑时制表符占用空格数
+  set tabstop=4
+ " 设置格式化时制表符占用空格数
+  set shiftwidth=4
+ " 让 vim 把连续数量的空格视为一个制表符
+  set softtabstop=4
+
+
+
+
+
+" Local config
+if filereadable($HOME . "/.vimrc.local")
+  source ~/.vimrc.local
+endif
